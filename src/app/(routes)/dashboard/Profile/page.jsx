@@ -17,6 +17,7 @@ export default function Profile() {
     found: [],
     resolved: []
   })
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -116,7 +117,7 @@ export default function Profile() {
               <p className="text-gray-600 text-sm">{user?.email}</p>
             </div>
             <button 
-              onClick={handleSignOut}
+              onClick={() => setShowLogoutConfirm(true)}
               className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg"
             >
               Sign Out
@@ -124,6 +125,30 @@ export default function Profile() {
           </div>
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-md w-full">
+            <h3 className="text-lg font-medium mb-4">Confirm Sign Out</h3>
+            <p className="text-gray-600 mb-6">Are you sure you want to sign out?</p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSignOut}
+                className="px-4 py-2 text-sm text-white bg-red-600 hover:bg-red-700 rounded-lg"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="max-w-6xl mx-auto p-4">

@@ -52,7 +52,7 @@ function Hero() {
       </div>
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <Image
-          src="/hero-background.jpg"
+          src="/background4.jpg"
           alt="Background"
           fill
           className="object-cover opacity-10"
