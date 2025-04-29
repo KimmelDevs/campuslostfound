@@ -1,7 +1,9 @@
 import React from 'react'
 import { MapPin, Calendar, Tag } from 'lucide-react'
+import Link from 'next/link'
 
 const ItemCard = ({ 
+  id,
   status = 'unknown',
   itemName = 'Unnamed Item', 
   location = 'Unknown location', 
@@ -71,9 +73,12 @@ const ItemCard = ({
           <p className="text-gray-600 text-sm line-clamp-2">{description}</p>
         )}
         <div className="text-right">
-          <a href="#" className="text-blue-600 text-sm hover:underline">
+          <Link 
+            href={`/dashboard/itemmanage?id=${id}`} 
+            className="text-blue-600 text-sm hover:underline"
+          >
             View Details
-          </a>
+          </Link>
         </div>
       </div>
     </div>

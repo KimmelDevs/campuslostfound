@@ -19,6 +19,9 @@ export default function ReportPage() {
     date: '',
     description: '',
     contactEmail: '',
+    contactNumber: '',
+    idTag: '',
+    ownerTag: '',
     imageBase64: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -29,7 +32,11 @@ export default function ReportPage() {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser)
-        setFormData(prev => ({ ...prev, contactEmail: firebaseUser.email || '' }))
+        setFormData(prev => ({ 
+          ...prev, 
+          contactEmail: firebaseUser.email || '',
+          contactNumber: firebaseUser.phoneNumber || '' 
+        }))
       } else {
         router.replace('/sign-in')
       }
@@ -39,7 +46,7 @@ export default function ReportPage() {
   }, [router])
 
   const categories = [
-    'All', 'Bag', 'Electronics', 'Book', 'Clothing', 
+    'Bag', 'Electronics', 'Book', 'Clothing', 
     'Personal Items', 'Keys', 'ID Card', 'Other'
   ]
 
@@ -57,7 +64,6 @@ export default function ReportPage() {
       reader.onload = (event) => {
         const img = new Image()
         img.onload = () => {
-          // Calculate new dimensions (max 800px)
           const MAX_SIZE = 800
           let width = img.width
           let height = img.height
@@ -74,15 +80,13 @@ export default function ReportPage() {
             }
           }
 
-          // Resize the canvas and draw the image
           canvas.width = width
           canvas.height = height
           ctx.drawImage(img, 0, 0, width, height)
 
-          // Convert to base64 with quality compression
-          const quality = 0.7 // 70% quality
+          const quality = 0.7
           const base64 = canvas.toDataURL('image/jpeg', quality)
-          resolve(base64.split(',')[1]) // Remove the data URL prefix
+          resolve(base64.split(',')[1])
         }
         img.src = event.target.result
       }
@@ -96,11 +100,9 @@ export default function ReportPage() {
     if (!file) return
 
     try {
-      // Create preview
       const previewUrl = URL.createObjectURL(file)
       setImagePreview(previewUrl)
 
-      // Compress and convert to base64
       const compressedBase64 = await compressImageToBase64(file)
       setFormData(prev => ({ ...prev, imageBase64: compressedBase64 }))
     } catch (err) {
@@ -118,15 +120,14 @@ export default function ReportPage() {
       return
     }
 
-    if (!selectedCategory || selectedCategory === 'All') {
-      setError('Please select a specific category')
+    if (!selectedCategory) {
+      setError('Please select a category')
       return
     }
 
     setIsSubmitting(true)
 
     try {
-      // Create report data
       const reportData = {
         type: reportType,
         category: selectedCategory,
@@ -138,11 +139,9 @@ export default function ReportPage() {
         userEmail: user.email
       }
 
-      // Add to Firestore (main reports collection)
       const reportsRef = collection(db, 'reports')
       await addDoc(reportsRef, reportData)
 
-      // Also store in user's subcollection
       const userReportsRef = collection(db, 'users', user.uid, 'reports')
       await addDoc(userReportsRef, reportData)
 
@@ -157,25 +156,33 @@ export default function ReportPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-bold text-center mb-6">Report Item</h1>
+    <div className="min-h-screen bg-[#f8fafc] py-8 px-4">
+      <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
+        <h1 className="text-2xl font-bold text-center mb-8 text-[#2c3e50]">Report Item</h1>
 
         {/* Report Type */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">What would you like to report?</h2>
+          <h2 className="text-lg font-semibold mb-4 text-[#2c3e50]">What would you like to report?</h2>
           <div className="flex gap-4">
             <button
               type="button"
               onClick={() => setReportType('lost')}
-              className={`flex-1 py-3 px-4 rounded-lg border-2 ${reportType === 'lost' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}
+              className={`flex-1 py-4 px-4 rounded-lg border-2 text-lg font-medium ${
+                reportType === 'lost' 
+                  ? 'border-[#2ecc71] bg-[#2ecc71]/10 text-[#2ecc71]' 
+                  : 'border-gray-300 text-gray-500 hover:border-[#2ecc71]'
+              }`}
             >
               Lost Item
             </button>
             <button
               type="button"
               onClick={() => setReportType('found')}
-              className={`flex-1 py-3 px-4 rounded-lg border-2 ${reportType === 'found' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}
+              className={`flex-1 py-4 px-4 rounded-lg border-2 text-lg font-medium ${
+                reportType === 'found' 
+                  ? 'border-[#2ecc71] bg-[#2ecc71]/10 text-[#2ecc71]' 
+                  : 'border-gray-300 text-gray-500 hover:border-[#2ecc71]'
+              }`}
             >
               Found Item
             </button>
@@ -184,34 +191,34 @@ export default function ReportPage() {
 
         {reportType && (
           <form onSubmit={handleSubmit}>
-            {error && <p className="text-red-500 mb-4">{error}</p>}
+            {error && <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">{error}</div>}
 
             {/* Item Name */}
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">Item Name *</label>
+            <div className="mb-6">
+              <label className="block text-gray-700 mb-2 font-medium">Item Name *</label>
               <input
                 type="text"
                 name="itemName"
                 value={formData.itemName}
                 onChange={handleInputChange}
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2ecc71] focus:border-transparent"
                 required
               />
             </div>
 
             {/* Category */}
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">Category *</label>
+            <div className="mb-6">
+              <label className="block text-gray-700 mb-2 font-medium">Category *</label>
               <div className="flex flex-wrap gap-2">
                 {categories.map(cat => (
                   <button
                     key={cat}
                     type="button"
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-3 py-1 rounded-full text-sm ${
+                    className={`px-4 py-2 rounded-full text-sm font-medium ${
                       selectedCategory === cat 
-                        ? 'bg-black text-white' 
-                        : 'border border-gray-300'
+                        ? 'bg-[#2ecc71] text-white' 
+                        : 'bg-gray-100 text-[#2c3e50] hover:bg-gray-200'
                     }`}
                   >
                     {cat}
@@ -221,8 +228,8 @@ export default function ReportPage() {
             </div>
 
             {/* Location */}
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">
+            <div className="mb-6">
+              <label className="block text-gray-700 mb-2 font-medium">
                 {reportType === 'lost' ? 'Last Seen Location' : 'Found Location'} *
               </label>
               <input
@@ -230,14 +237,14 @@ export default function ReportPage() {
                 name="location"
                 value={formData.location}
                 onChange={handleInputChange}
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2ecc71] focus:border-transparent"
                 required
               />
             </div>
 
             {/* Date */}
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">
+            <div className="mb-6">
+              <label className="block text-gray-700 mb-2 font-medium">
                 {reportType === 'lost' ? 'Date Lost' : 'Date Found'} *
               </label>
               <input
@@ -245,32 +252,75 @@ export default function ReportPage() {
                 name="date"
                 value={formData.date}
                 onChange={handleInputChange}
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2ecc71] focus:border-transparent"
                 required
               />
             </div>
 
             {/* Description */}
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">Description *</label>
+            <div className="mb-6">
+              <label className="block text-gray-700 mb-2 font-medium">Description *</label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                className="w-full p-3 border rounded-lg"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2ecc71] focus:border-transparent"
                 rows={4}
                 required
               />
             </div>
 
+            {/* ID Tag/Owner Tag */}
+            <div className="mb-6">
+              <label className="block text-gray-700 mb-2 font-medium">
+                {reportType === 'lost' ? 'Owner Identification Tag' : 'Item Identification Tag'}
+              </label>
+              <input
+                type="text"
+                name={reportType === 'lost' ? 'ownerTag' : 'idTag'}
+                value={reportType === 'lost' ? formData.ownerTag : formData.idTag}
+                onChange={handleInputChange}
+                placeholder={reportType === 'lost' ? 'Any identifying marks or owner info' : 'Any ID numbers or tags on the item'}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2ecc71] focus:border-transparent"
+              />
+            </div>
+
+            {/* Contact Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div>
+                <label className="block text-gray-700 mb-2 font-medium">Contact Email *</label>
+                <input
+                  type="email"
+                  name="contactEmail"
+                  value={formData.contactEmail}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2ecc71] focus:border-transparent"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-2 font-medium">Contact Number *</label>
+                <input
+                  type="tel"
+                  name="contactNumber"
+                  value={formData.contactNumber}
+                  onChange={handleInputChange}
+                  placeholder="e.g., +09 6383 3738"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2ecc71] focus:border-transparent"
+                  required
+                />
+              </div>
+            </div>
+
             {/* Image Upload */}
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">Upload Image</label>
+            <div className="mb-8">
+              <label className="block text-gray-700 mb-2 font-medium">Upload Image</label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="w-full p-3 border rounded-lg"
+                ref={fileInputRef}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2ecc71] focus:border-transparent"
               />
               {imagePreview && (
                 <div className="mt-4">
@@ -283,24 +333,11 @@ export default function ReportPage() {
               )}
             </div>
 
-            {/* Contact Email */}
-            <div className="mb-6">
-              <label className="block text-gray-700 mb-2">Contact Email *</label>
-              <input
-                type="email"
-                name="contactEmail"
-                value={formData.contactEmail}
-                onChange={handleInputChange}
-                className="w-full p-3 border rounded-lg"
-                required
-              />
-            </div>
-
             {/* Submit Button */}
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:bg-blue-400"
+              className="w-full bg-[#2ecc71] text-white py-3 rounded-lg hover:bg-[#27ae60] transition disabled:bg-[#2ecc71]/70 font-medium text-lg"
             >
               {isSubmitting ? 'Submitting...' : 'Submit Report'}
             </button>

@@ -35,7 +35,6 @@ export default function Profile() {
 
   const fetchUserReports = async (userId) => {
     try {
-      // Query the user's reports subcollection
       const userReportsRef = collection(db, 'users', userId, 'reports')
       const q = query(userReportsRef)
       const querySnapshot = await getDocs(q)
@@ -48,7 +47,6 @@ export default function Profile() {
 
       querySnapshot.forEach((doc) => {
         const reportData = doc.data()
-        // Convert Firestore timestamp to date string if it exists
         const date = reportData.date || (reportData.createdAt?.toDate()?.toISOString().split('T')[0] || '')
         
         const item = {
@@ -65,7 +63,6 @@ export default function Profile() {
             : null
         }
 
-        // Categorize based on type and status
         if (reportData.status === 'resolved') {
           reports.resolved.push(item)
         } else if (reportData.type === 'lost') {
@@ -92,33 +89,34 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
         <div className="text-center">
-          <p>Loading profile...</p>
+          <div className="w-16 h-16 border-4 border-[#2ecc71] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-[#2c3e50]">Loading profile...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#f8fafc]">
       {/* Header */}
-      <div className="bg-white shadow-lg">
-        <div className="max-w-6xl mx-auto px-8 py-6 flex items-center justify-between">
+      <div className="bg-[#2c3e50] shadow-lg">
+        <div className="max-w-7xl mx-auto px-8 py-6 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">My Profile</h1>
-            <p className="text-gray-600 text-lg mt-2">
+            <h1 className="text-3xl font-bold text-white">My Profile</h1>
+            <p className="text-gray-300 text-lg mt-2">
               View and manage your lost and found items
             </p>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="font-medium">{user?.displayName || user?.email?.split('@')[0] || 'User'}</p>
-              <p className="text-gray-600 text-sm">{user?.email}</p>
+              <p className="font-medium text-white">{user?.displayName || user?.email?.split('@')[0] || 'User'}</p>
+              <p className="text-gray-300 text-sm">{user?.email}</p>
             </div>
             <button 
               onClick={() => setShowLogoutConfirm(true)}
-              className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg"
+              className="px-4 py-2 text-sm text-white bg-[#e74c3c] hover:bg-[#c0392b] rounded-lg transition-colors"
             >
               Sign Out
             </button>
@@ -141,7 +139,7 @@ export default function Profile() {
               </button>
               <button
                 onClick={handleSignOut}
-                className="px-4 py-2 text-sm text-white bg-red-600 hover:bg-red-700 rounded-lg"
+                className="px-4 py-2 text-sm text-white bg-[#e74c3c] hover:bg-[#c0392b] rounded-lg transition-colors"
               >
                 Sign Out
               </button>
@@ -151,34 +149,35 @@ export default function Profile() {
       )}
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto p-4">
+      <div className="max-w-7xl mx-auto px-8 py-8">
         {/* Navigation Tabs */}
-        <div className="flex border-b mb-6">
+        <div className="flex border-b mb-8">
           <button
             onClick={() => setActiveTab('lost')}
-            className={`px-4 py-2 font-medium ${activeTab === 'lost' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+            className={`px-6 py-3 font-medium ${activeTab === 'lost' ? 'text-[#2ecc71] border-b-2 border-[#2ecc71]' : 'text-gray-500 hover:text-[#2c3e50]'}`}
           >
             My Lost Items ({items.lost.length})
           </button>
           <button
             onClick={() => setActiveTab('found')}
-            className={`px-4 py-2 font-medium ${activeTab === 'found' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+            className={`px-6 py-3 font-medium ${activeTab === 'found' ? 'text-[#2ecc71] border-b-2 border-[#2ecc71]' : 'text-gray-500 hover:text-[#2c3e50]'}`}
           >
             My Found Items ({items.found.length})
           </button>
           <button
             onClick={() => setActiveTab('resolved')}
-            className={`px-4 py-2 font-medium ${activeTab === 'resolved' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+            className={`px-6 py-3 font-medium ${activeTab === 'resolved' ? 'text-[#2ecc71] border-b-2 border-[#2ecc71]' : 'text-gray-500 hover:text-[#2c3e50]'}`}
           >
             Resolved Items ({items.resolved.length})
           </button>
         </div>
 
         {/* Items Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {activeTab === 'lost' && items.lost.map(item => (
             <ItemCard 
               key={item.id}
+              id={item.id}
               status="lost"
               itemName={item.name}
               location={item.location}
@@ -191,6 +190,7 @@ export default function Profile() {
           {activeTab === 'found' && items.found.map(item => (
             <ItemCard 
               key={item.id}
+              id={item.id}
               status="found"
               itemName={item.name}
               location={item.location}
@@ -203,6 +203,7 @@ export default function Profile() {
           {activeTab === 'resolved' && items.resolved.map(item => (
             <ItemCard 
               key={item.id}
+              id={item.id}
               status="resolved"
               itemName={item.name}
               location={item.location}
@@ -218,8 +219,17 @@ export default function Profile() {
         {((activeTab === 'lost' && items.lost.length === 0) ||
           (activeTab === 'found' && items.found.length === 0) ||
           (activeTab === 'resolved' && items.resolved.length === 0)) && (
-          <div className="text-center py-12 text-gray-500">
-            No {activeTab} items to display
+          <div className="bg-white rounded-xl shadow-lg p-12 text-center mt-6">
+            <div className="mx-auto max-w-md">
+              <h3 className="text-lg font-medium text-[#2c3e50]">
+                No {activeTab} items to display
+              </h3>
+              <p className="mt-1 text-gray-500">
+                {activeTab === 'lost' ? 'You haven\'t reported any lost items yet' : 
+                 activeTab === 'found' ? 'You haven\'t reported any found items yet' : 
+                 'You don\'t have any resolved cases yet'}
+              </p>
+            </div>
           </div>
         )}
       </div>

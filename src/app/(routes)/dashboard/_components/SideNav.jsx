@@ -8,6 +8,7 @@ import {
   Search,
   UserRoundPen,
   SearchCheck,
+  LogOut
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -67,27 +68,56 @@ function SideNav() {
   ]
 
   return (
-    <div className="h-screen p-5 border shadow-sm">
+    <div className="h-screen p-5 bg-[#2c3e50] shadow-lg border-r-2 border-[#2ecc71]">
+      {/* Logo and App Name */}
       <div className="flex flex-row items-center">
-        <Image src={'/logo.png'} alt='logo' width={40} height={40} className="object-contain" />
-        <span className='text-green-800 font-bold text-xl ml-2'>Lost and Found</span>
+        
+        <h1 className="text-xl font-bold bg-gradient-to-r from-[#2ecc71] to-[#27ae60] bg-clip-text text-transparent ml-2">
+          Lost and Found
+        </h1>
       </div>
 
-      <div className="mt-5">
+      {/* Navigation Menu */}
+      <div className="mt-8">
         {menuList.map((menu) => (
           <Link href={menu.path} key={menu.id}>
-            <h2
-              className={`flex gap-2 items-center text-gray-500 font-medium mb-2 p-4 cursor-pointer rounded-full
-              hover:text-primary hover:bg-blue-100
-              ${path === menu.path ? "text-primary bg-blue-100" : ""}`}
+            <div
+              className={`flex gap-3 items-center text-gray-300 font-medium mb-2 p-3 rounded-lg transition-colors
+                hover:bg-[#34495e] hover:text-white
+                ${path === menu.path ? "bg-[#34495e] text-white" : ""}`}
             >
-              <menu.icon size={18} />
-              {menu.name}
-            </h2>
+              <menu.icon 
+                size={20} 
+                className={`${path === menu.path ? "text-[#2ecc71]" : "text-gray-400"}`} 
+              />
+              <span>{menu.name}</span>
+            </div>
           </Link>
         ))}
       </div>
 
+      {/* User Info and Sign Out */}
+      {user && (
+        <div className="absolute bottom-5 left-5 right-5">
+          <div className="flex items-center justify-between p-3 bg-[#34495e] rounded-lg">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-[#2ecc71] flex items-center justify-center text-white">
+                {user.email?.charAt(0).toUpperCase()}
+              </div>
+              <span className="text-sm text-gray-300 truncate max-w-[120px]">
+                {user.email}
+              </span>
+            </div>
+            <button 
+              onClick={handleSignOut}
+              className="text-gray-400 hover:text-red-400 transition-colors"
+              title="Sign out"
+            >
+              <LogOut size={18} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

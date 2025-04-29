@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { Bell } from "lucide-react"
 
 function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -43,8 +44,16 @@ function Header() {
   }
 
   return (
-    <div className="p-5 flex justify-end items-center border shadow-sm bg-white dark:bg-gray-800 dark:border-gray-700">
+    <div className="p-5 flex justify-end items-center border shadow-sm bg-[#2c3e50] dark:bg-gray-800 dark:border-gray-700">
       <div className="relative">
+        
+      {/* Bell Icon */}
+      <button onClick={() => router.push('/dashboard/notification')} className="relative group">
+        <Bell className="w-6 h-6 text-white hover:text-blue-400 transition-colors" />
+        <span className="absolute -right-2 -top-2 bg-red-500 text-white text-xs rounded-full px-1 hidden group-hover:block">
+          {/* Optional: notification count */}
+        </span>
+      </button>
         {/* WiFi Icon */}
         <svg 
           xmlns="http://www.w3.org/2000/svg" 
@@ -75,6 +84,8 @@ function Header() {
            networkStatus === 'slow' ? 'Weak connection' : 
            'No internet connection'}
         </div>
+        
+
       </div>
     </div>
   );

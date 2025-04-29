@@ -10,7 +10,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 
 function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -18,48 +18,55 @@ function Header() {
       setIsLoggedIn(!!user);
       setLoading(false);
       
-      // If user is logged in, redirect to dashboard
       if (user) {
         router.push('/dashboard');
       }
     });
 
     return () => unsubscribe();
-  }, [router]); // Add router to dependency array
+  }, [router]);
 
   const handleRedirect = () => {
     router.push('/sign-in');
   };
 
-  // Don't render anything while checking auth state
   if (loading) {
     return null;
   }
 
   return (
-    <div className="p-5 flex justify-between items-center border shadow-sm">
-      <div className="flex flex-row items-center gap-2">
+    <header className="fixed top-0 left-0 right-0 z-50 p-4 flex justify-between items-center bg-[#2c3e50] shadow-lg border-b-2 border-[#2ecc71]">
+      <div className="flex items-center gap-3">
         <Image 
           src="/logo.png" 
           alt="logo" 
           width={40} 
           height={40} 
-          className="object-contain" 
+          className="object-contain"
         />
-        <span className="text-green-800 font-bold text-xl">Lost and Found</span>
+        <h1 className="text-xl font-bold bg-gradient-to-r from-[#2ecc71] to-[#27ae60] bg-clip-text text-transparent">
+          Campus Lost and Found
+        </h1>
       </div>
 
       {!isLoggedIn && (
         <div className="flex gap-3 items-center">
-          <Button variant="outline" className="rounded-full" onClick={handleRedirect}>
+          <Button 
+            variant="outline" 
+            className="rounded-full border-white bg-white/10 text-white hover:bg-white/20 hover:text-white transition-colors"
+            onClick={handleRedirect}
+          >
             Dashboard
           </Button>
-          <Button className="rounded-full" onClick={handleRedirect}>
+          <Button 
+            className="rounded-full bg-[#2ecc71] hover:bg-[#27ae60] text-white transition-colors"
+            onClick={handleRedirect}
+          >
             Get Started
           </Button>
         </div>
       )}
-    </div>
+    </header>
   );
 }
 

@@ -6,6 +6,7 @@ import { signUp } from "@/lib/auth";
 import { db } from "@/lib/firebase";
 import { doc, setDoc } from "firebase/firestore"; 
 import Link from "next/link";
+import Image from "next/image";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -32,18 +33,13 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      // 1. Create auth user
       const userCredential = await signUp(email, password);
-      
-      // 2. Create user document in Firestore
       await setDoc(doc(db, "users", userCredential.user.uid), {
         email: userCredential.user.email,
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString(),
         role: "user",
       });
-
-      // 3. Redirect to dashboard
       router.push("/dashboard");
     } catch (err) {
       setError(err.message);
@@ -53,22 +49,34 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white shadow-md rounded-2xl w-full max-w-md p-8 space-y-6">
+    <div className="relative min-h-screen flex items-center justify-center px-4">
+      {/* Background image with overlay */}
+      <div className="absolute inset-0 -z-10">
+        <Image
+          src="/loginback.jpg"
+          alt="Login background"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-[#2c3e50]/80 backdrop-blur-sm"></div>
+      </div>
+
+      <div className="bg-[#2c3e50] shadow-lg rounded-2xl w-full max-w-md p-8 space-y-6 border-2 border-[#2ecc71]">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-800">Create an Account</h2>
-          <p className="text-gray-500 text-sm">Join our community today</p>
+          <h2 className="text-3xl font-bold text-white">Create an Account</h2>
+          <p className="text-gray-300 text-sm">Join Campus Lost and Found today</p>
         </div>
         
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+          <div className="bg-red-900/20 text-red-400 p-3 rounded-md text-sm">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSignUp} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Email
             </label>
             <input
@@ -76,13 +84,13 @@ export default function SignUpPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2ecc71] bg-[#34495e] text-white"
               placeholder="you@example.com"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Password
             </label>
             <input
@@ -90,14 +98,14 @@ export default function SignUpPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2ecc71] bg-[#34495e] text-white"
               placeholder="••••••••"
               minLength={6}
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Confirm Password
             </label>
             <input
@@ -105,7 +113,7 @@ export default function SignUpPage() {
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2ecc71] bg-[#34495e] text-white"
               placeholder="••••••••"
               minLength={6}
             />
@@ -114,15 +122,15 @@ export default function SignUpPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-60"
+            className="w-full bg-[#2ecc71] text-white py-2 rounded-lg hover:bg-[#27ae60] transition-colors disabled:opacity-60 font-medium"
           >
             {loading ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
 
-        <p className="text-sm text-center text-gray-500">
+        <p className="text-sm text-center text-gray-300">
           Already have an account?{" "}
-          <Link href="/sign-in" className="text-blue-600 hover:underline">
+          <Link href="/sign-in" className="text-[#2ecc71] hover:underline font-medium">
             Sign in
           </Link>
         </p>
