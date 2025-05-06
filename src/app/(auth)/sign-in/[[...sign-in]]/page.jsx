@@ -22,10 +22,16 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
-      await signIn(email, password)
-      router.push("/dashboard");
+      const { userData } = await signIn(email, password);
+      
+      // Check the user's role and redirect accordingly
+      if (userData?.role === 'admin') {
+        router.push("/admindashboard");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err) {
-      setError(err.message || "Failed to Log in.");
+      setError(err.message || "Failed to log in.");
     } finally {
       setLoading(false);
     }
@@ -84,12 +90,19 @@ export default function SignInPage() {
           </button>
           {error && <p className="text-sm text-red-400 mt-2 text-center">{error}</p>}
         </form>
-        <p className="text-sm text-center text-gray-300">
-          Don&apos;t have an account?{" "}
-          <a href="/sign-up" className="text-[#2ecc71] hover:underline font-medium">
-            Sign up
-          </a>
-        </p>
+        <div className="text-center space-y-2">
+          <p className="text-sm text-gray-300">
+            Don&apos;t have an account?{" "}
+            <a href="/sign-up" className="text-[#2ecc71] hover:underline font-medium">
+              Sign up
+            </a>
+          </p>
+          <p className="text-sm text-gray-300">
+            <a href="/forgot-password" className="text-[#2ecc71] hover:underline font-medium">
+              Forgot password?
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );

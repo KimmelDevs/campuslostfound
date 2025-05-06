@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { Search } from 'lucide-react'
+import { Search, Bell, MessageSquare } from 'lucide-react'
 import ItemCard from './_components/ItemCard'
 import { useRouter } from 'next/navigation'
 import { onAuthStateChanged } from 'firebase/auth'
@@ -17,32 +17,71 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [activeCategory, setActiveCategory] = useState('All')
+  const [stats, setStats] = useState({
+    lost: 0,
+    found: 0,
+    resolved: 0
+  })
+  const [networkStatus, setNetworkStatus] = useState('good') // 'good', 'slow', 'offline'
 
   useEffect(() => {
+    // Check network status
+    const updateNetworkStatus = () => {
+      if (!navigator.onLine) {
+        setNetworkStatus('offline')
+      } else {
+        const latency = Math.random() * 1000
+        setNetworkStatus(latency < 200 ? 'good' : latency < 500 ? 'slow' : 'offline')
+      }
+    }
+
+    updateNetworkStatus()
+    const interval = setInterval(updateNetworkStatus, 5000)
+
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser)
-        fetchItems()
+        fetchItems(firebaseUser.uid)
       } else {
         router.replace('/sign-in')
       }
     })
 
-    return () => unsubscribe()
+    return () => {
+      clearInterval(interval)
+      unsubscribe()
+    }
   }, [router])
 
-  const fetchItems = async () => {
+  const fetchItems = async (userId) => {
     try {
       setLoading(true)
       const reportsRef = collection(db, 'reports')
-      const q = query(reportsRef)
+      const q = query(reportsRef, where('userId', '!=', userId)) // Exclude user's own posts
       
       const querySnapshot = await getDocs(q)
       const itemsData = []
+      let lostCount = 0
+      let foundCount = 0
+      let resolvedCount = 0
+
+      // Get date 7 days ago
+      const oneWeekAgo = new Date()
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
 
       querySnapshot.forEach((doc) => {
         const reportData = doc.data()
-        const date = reportData.date || (reportData.createdAt?.toDate()?.toISOString().split('T')[0] || '')
+        const createdAt = reportData.createdAt?.toDate() || new Date()
+        const isThisWeek = createdAt >= oneWeekAgo
+        
+        // Count weekly stats
+        if (isThisWeek) {
+          if (reportData.type === 'lost') lostCount++
+          if (reportData.type === 'found') foundCount++
+          if (reportData.status === 'resolved') resolvedCount++
+        }
+
+        const date = reportData.date || (createdAt.toISOString().split('T')[0] || '')
         
         itemsData.push({
           id: doc.id,
@@ -60,6 +99,11 @@ function Dashboard() {
       })
 
       setItems(itemsData)
+      setStats({
+        lost: lostCount,
+        found: foundCount,
+        resolved: resolvedCount
+      })
       setLoading(false)
     } catch (error) {
       console.error('Error fetching items:', error)
@@ -105,21 +149,81 @@ function Dashboard() {
     <div className="min-h-screen bg-[#f8fafc]">
       {/* Header */}
       <div className="bg-[#2c3e50] shadow-lg">
-        <div className="max-w-7xl mx-auto px-8 py-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-white">NWSSU: Lost and Found</h1>
-            <p className="text-gray-300 text-lg mt-2">
-              Reuniting lost items with their owners
-            </p>
-          </div>
-          <div className="w-24 h-24 bg-white rounded-full p-2 shadow-md">
-            <Image 
-              src="/header.png" 
-              alt="NWSSU Lost and Found" 
-              width={96} 
-              height={96}
-              className="rounded-full"
-            />
+        <div className="max-w-7xl mx-auto px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-white">NWSSU: Lost and Found</h1>
+              <p className="text-gray-300 text-lg mt-2">
+                Reuniting lost items with their owners
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              {/* Notification, Message and WiFi Icons */}
+              <div className="flex items-center gap-4">
+                {/* Bell Icon */}
+                <button 
+                  onClick={() => router.push('/dashboard/notification')} 
+                  className="relative group text-white hover:text-blue-400 transition-colors"
+                >
+                  <Bell className="w-6 h-6" />
+                </button>
+
+                {/* Message Icon */}
+                <button 
+                  onClick={() => router.push('/dashboard/messages')} 
+                  className="relative group text-white hover:text-blue-400 transition-colors"
+                >
+                  <MessageSquare className="w-6 h-6" />
+                </button>
+
+                {/* WiFi Icon */}
+                <div className="relative">
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="24" 
+                    height="24" 
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={`${
+                      networkStatus === 'good'
+                        ? 'text-green-500'
+                        : networkStatus === 'slow'
+                        ? 'text-yellow-500'
+                        : 'text-red-500'
+                    }`}
+                  >
+                    <path d="M5 12.55a11 11 0 0 1 14.08 0" opacity={networkStatus === 'offline' ? '0' : '1'} />
+                    <path d="M1.42 9a16 16 0 0 1 21.16 0" opacity={networkStatus === 'good' ? '1' : '0'} />
+                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0" opacity={networkStatus !== 'offline' ? '1' : '0'} />
+                    <circle cx="12" cy="19" r="1" opacity={networkStatus !== 'offline' ? '1' : '0'} />
+                  </svg>
+
+                  {/* Tooltip */}
+                  <div className="absolute right-0 top-full mt-1 px-2 py-1 text-xs bg-gray-800 text-white rounded opacity-0 hover:opacity-100 transition-opacity">
+                    {networkStatus === 'good'
+                      ? 'Strong connection'
+                      : networkStatus === 'slow'
+                      ? 'Weak connection'
+                      : 'No internet connection'}
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-24 h-24 bg-white rounded-full p-2 shadow-md">
+                <Image 
+                  src="/header.png" 
+                  alt="NWSSU Lost and Found" 
+                  width={96} 
+                  height={96}
+                  className="rounded-full"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -127,16 +231,16 @@ function Dashboard() {
       {/* Quick Stats */}
       <div className="max-w-7xl mx-auto px-8 py-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className="bg-white shadow-lg rounded-xl p-6 border-l-4 border-red-500">
-          <h3 className="text-gray-500 text-sm font-medium">Lost Items Today</h3>
-          <p className="text-3xl font-bold text-gray-800 mt-2">12</p>
+          <h3 className="text-gray-500 text-sm font-medium">Lost Items This Week</h3>
+          <p className="text-3xl font-bold text-gray-800 mt-2">{stats.lost}</p>
         </div>
         <div className="bg-white shadow-lg rounded-xl p-6 border-l-4 border-green-500">
-          <h3 className="text-gray-500 text-sm font-medium">Found Items Today</h3>
-          <p className="text-3xl font-bold text-gray-800 mt-2">8</p>
+          <h3 className="text-gray-500 text-sm font-medium">Found Items This Week</h3>
+          <p className="text-3xl font-bold text-gray-800 mt-2">{stats.found}</p>
         </div>
         <div className="bg-white shadow-lg rounded-xl p-6 border-l-4 border-blue-500">
-          <h3 className="text-gray-500 text-sm font-medium">Resolved Cases</h3>
-          <p className="text-3xl font-bold text-gray-800 mt-2">5</p>
+          <h3 className="text-gray-500 text-sm font-medium">Resolved This Week</h3>
+          <p className="text-3xl font-bold text-gray-800 mt-2">{stats.resolved}</p>
         </div>
       </div>
 
@@ -174,20 +278,6 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Search */}
-          <div className="relative mb-6">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
-            </div>
-            <input 
-              type="text" 
-              placeholder="Search items by name, location or description..." 
-              className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#2ecc71] focus:border-transparent"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-
           {/* Category Filters */}
           <div className="flex flex-wrap gap-2 mb-2">
             {categories.map(category => (
@@ -212,6 +302,7 @@ function Dashboard() {
             {filteredItems.map(item => (
               <ItemCard 
                 key={item.id}
+                id={item.id}  
                 status={item.type}
                 itemName={item.name}
                 location={item.location}

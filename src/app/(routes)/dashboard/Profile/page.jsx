@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { auth, db } from '@/lib/firebase'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { collection, query, where, getDocs } from 'firebase/firestore'
-import ItemCard from '../_components/ItemCard'
+import ItemCard from '../_components/OwnItemCard '
 
 export default function Profile() {
   const router = useRouter()
@@ -35,8 +35,9 @@ export default function Profile() {
 
   const fetchUserReports = async (userId) => {
     try {
-      const userReportsRef = collection(db, 'users', userId, 'reports')
-      const q = query(userReportsRef)
+      setLoading(true)
+      const userReportsRef = collection(db, 'reports')
+      const q = query(userReportsRef, where('userId', '==', userId))
       const querySnapshot = await getDocs(q)
 
       const reports = {
@@ -50,7 +51,8 @@ export default function Profile() {
         const date = reportData.date || (reportData.createdAt?.toDate()?.toISOString().split('T')[0] || '')
         
         const item = {
-          id: doc.id,
+          id: doc.id, // This is the crucial ID that gets passed to ItemCard
+          userId: userId,
           name: reportData.itemName,
           location: reportData.location,
           date: date,
@@ -75,6 +77,8 @@ export default function Profile() {
       setItems(reports)
     } catch (error) {
       console.error('Error fetching reports:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -177,7 +181,7 @@ export default function Profile() {
           {activeTab === 'lost' && items.lost.map(item => (
             <ItemCard 
               key={item.id}
-              id={item.id}
+              id={item.id}  // Passing the ID to ItemCard
               status="lost"
               itemName={item.name}
               location={item.location}
@@ -190,7 +194,7 @@ export default function Profile() {
           {activeTab === 'found' && items.found.map(item => (
             <ItemCard 
               key={item.id}
-              id={item.id}
+              id={item.id}  // Passing the ID to ItemCard
               status="found"
               itemName={item.name}
               location={item.location}
@@ -203,7 +207,7 @@ export default function Profile() {
           {activeTab === 'resolved' && items.resolved.map(item => (
             <ItemCard 
               key={item.id}
-              id={item.id}
+              id={item.id}  // Passing the ID to ItemCard
               status="resolved"
               itemName={item.name}
               location={item.location}

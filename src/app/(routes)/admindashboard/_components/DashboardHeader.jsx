@@ -24,7 +24,7 @@ function Header() {
     };
 
     updateNetworkStatus();
-    const interval = setInterval(updateNetworkStatus, 5000);
+    const interval = setInterval(updateNetworkStatus, 1000);
 
     // Auth state listener
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -43,7 +43,11 @@ function Header() {
   }
 
   return (
-    <div className="p-5 flex justify-end items-center border shadow-sm bg-[#2c3e50] dark:bg-gray-800 dark:border-gray-700">
+    <div className="p-5 flex justify-between items-center border shadow-sm bg-[#2c3e50] dark:bg-gray-800 dark:border-gray-700">
+      {/* NWSSU Admin Panel Text */}
+      <div className="text-white font-bold text-xl">NWSSU Admin Panel</div>
+      
+      {/* Icons Container */}
       <div className="flex items-center gap-4">
         {/* Bell Icon */}
         <button onClick={() => router.push('/dashboard/notification')} className="relative group">
@@ -51,7 +55,7 @@ function Header() {
         </button>
 
         {/* Message Icon */}
-        <button onClick={() => router.push('/dashboard/messages')} className="relative group">
+        <button onClick={() => router.push('/admindashboard/messages')} className="relative group">
           <MessageSquare className="w-6 h-6 text-white hover:text-blue-400 transition-colors" />
         </button>
 

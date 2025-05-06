@@ -2,15 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signUp } from "@/lib/auth";
-import { db } from "@/lib/firebase";
-import { doc, setDoc } from "firebase/firestore"; 
+import { signUp } from "@/lib/auth"; // We only need signUp now
 import Link from "next/link";
 import Image from "next/image";
 
 export default function SignUpPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -20,6 +19,7 @@ export default function SignUpPage() {
     e.preventDefault();
     setError("");
     
+    // Validation checks
     if (password !== confirmPassword) {
       setError("Passwords don't match");
       return;
@@ -30,16 +30,18 @@ export default function SignUpPage() {
       return;
     }
 
+    if (!username.trim()) {
+      setError("Username is required");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const userCredential = await signUp(email, password);
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        email: userCredential.user.email,
-        createdAt: new Date().toISOString(),
-        lastLogin: new Date().toISOString(),
-        role: "user",
-      });
+      // This now handles everything: auth creation, profile update, and Firestore doc
+      await signUp(email, password, username);
+      
+      // Redirect to dashboard after successful signup
       router.push("/dashboard");
     } catch (err) {
       setError(err.message);
@@ -75,6 +77,20 @@ export default function SignUpPage() {
         )}
 
         <form onSubmit={handleSignUp} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Username
+            </label>
+            <input
+              type="text"
+              required
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2ecc71] bg-[#34495e] text-white"
+              placeholder="Kimmel Delector"
+            />
+          </div>
+          
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Email

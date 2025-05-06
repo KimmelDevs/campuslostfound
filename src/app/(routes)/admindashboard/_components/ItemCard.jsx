@@ -17,13 +17,6 @@ const ItemCard = ({
     return str.charAt(0).toUpperCase() + str.slice(1)
   }
 
-  // Function to truncate text after 27 characters
-  const truncateText = (text, maxLength = 24) => {
-    if (!text) return 'Unknown'
-    if (text.length <= maxLength) return text
-    return text.substring(0, maxLength) + '...'
-  }
-
   const renderImage = () => {
     if (!imageUrl) {
       return (
@@ -53,7 +46,7 @@ const ItemCard = ({
   }
 
   return (
-    <div className="w-[330px] h-[412px] border rounded-xl shadow-lg relative bg-white overflow-hidden flex flex-col">
+    <div className="w-[330px] h-[412px] border rounded-xl shadow-lg relative bg-white overflow-hidden">
       {/* Image */}
       {renderImage()}
 
@@ -65,28 +58,21 @@ const ItemCard = ({
       </div>
 
       {/* Details */}
-      <div className="p-4 space-y-2 text-base flex-grow flex flex-col">
-        {/* Truncated Item Name (max 27 chars) */}
-        <h3 className="text-lg font-semibold text-gray-900" title={itemName}>
-          {truncateText(itemName)}
-        </h3>
-
+      <div className="p-4 space-y-2 text-base">
+        <h3 className="text-lg font-semibold text-gray-900">{itemName}</h3>
         <div className="flex items-center gap-2 text-gray-700">
-          <MapPin size={20} className="flex-shrink-0" /> 
-          <span className="truncate">{location}</span>
+          <MapPin size={20} /> {location}
         </div>
         <div className="flex items-center gap-2 text-gray-700">
-          <Calendar size={20} className="flex-shrink-0" /> 
-          <span className="truncate">{date}</span>
+          <Calendar size={20} /> {date}
         </div>
         <div className="flex items-center gap-2 text-gray-700">
-          <Tag size={20} className="flex-shrink-0" /> 
-          <span className="truncate">{category}</span>
+          <Tag size={20} /> {category}
         </div>
         {description && (
           <p className="text-gray-600 text-sm line-clamp-2">{description}</p>
         )}
-        <div className="text-right mt-auto">
+        <div className="text-right">
           <Link 
             href={`/dashboard/itemmanage?id=${id}`} 
             className="text-blue-600 text-sm hover:underline"

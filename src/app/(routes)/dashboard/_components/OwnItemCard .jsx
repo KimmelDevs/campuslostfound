@@ -88,7 +88,7 @@ const ItemCard = ({
         )}
         <div className="text-right mt-auto">
           <Link 
-            href={`/dashboard/itemmanage?id=${id}`} 
+            href={`/dashboard/ownitemmanage?id=${id}`} 
             className="text-blue-600 text-sm hover:underline"
           >
             View Details
