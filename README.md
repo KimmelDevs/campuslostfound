@@ -27,13 +27,13 @@ Students can report **lost** or **found** items, **browse listings**, **chat wit
 ## 📸 Screenshots
 
 ### 🏠 Homepage
-![Homepage](public/screenshots/background.jpg)
+![Homepage](public/screenshots/3.jpg)
 
-### 📄 Item Details
-![Item Details](public/screenshots/details.png)
-
+### 📄 Reporting
+![Item Details](public/screenshots/6.png)
+![Item Details](public/screenshots/7.png)
 ### 💬 Chat System
-![Chat System](public/screenshots/chat.png)
+![Chat System](public/screenshots/chats.png)
 
 ### 🔐 Admin Panel
 ![Admin Panel](public/screenshots/admin.png)

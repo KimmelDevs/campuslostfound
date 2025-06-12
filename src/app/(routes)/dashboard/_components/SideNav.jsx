@@ -66,12 +66,6 @@ function SideNav() {
       path: "/dashboard/Profile",
     },
     
-    {
-      id: 6,
-      name: "Ai",
-      icon: UserRoundPen,
-      path: "/dashboard/aipage",
-    },
   ]
 
   return (
