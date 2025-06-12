@@ -49,7 +49,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
 📸 Screenshots
 Homepage	Item Details
-https://public/screenshots/background.jpg	https://public/screenshots/details.png
+/public/screenshots/background.jpg	https://public/screenshots/details.png
 Chat System	Admin Panel
 https://public/screenshots/chat.png	https://public/screenshots/admin.png
 
