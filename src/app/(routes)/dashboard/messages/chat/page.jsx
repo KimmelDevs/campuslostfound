@@ -328,7 +328,7 @@ const ChatPage = () => {
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h2 className="font-bold">{otherUser?.displayName || 'Unknown User'}</h2>
-              {getStatusBadge()}
+              
             </div>
             <p className="text-sm text-white/80">
               {chat?.itemType === 'lost' ? 'Lost Item' : 'Found Item'}: {chat?.itemName}
@@ -336,27 +336,7 @@ const ChatPage = () => {
           </div>
 
           {/* Information Icon with Tooltip */}
-          <div className="relative">
-            <button
-              ref={infoIconRef}
-              onMouseEnter={() => setShowInfoTooltip(true)}
-              onMouseLeave={() => setShowInfoTooltip(false)}
-              className="p-1 text-white/70 hover:text-white"
-            >
-              <Info size={20} />
-            </button>
-            {showInfoTooltip && (
-              <div className="absolute right-0 top-full mt-1 w-64 bg-white text-gray-800 p-2 rounded shadow-lg z-10">
-                <p className="text-sm">
-                  {status === 'verified' 
-                    ? 'This claim has been verified. You may now coordinate the return of the item.'
-                    : status === 'return_pending'
-                      ? 'This return request is pending verification. Please wait for admin approval.'
-                      : 'Please refrain from meeting with the other party until the claim is verified by admin.'}
-                </p>
-              </div>
-            )}
-          </div>
+            
         </div>
       </div>
 

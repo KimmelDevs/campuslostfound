@@ -239,7 +239,6 @@ export default function MessagesPage() {
                         <h3 className="text-lg font-medium text-[#2c3e50] truncate">
                           {chat.otherUser.name}
                         </h3>
-                        {getStatusBadge(chat.status)}
                       </div>
                       <span className="text-sm text-gray-500">
                         {chat.lastUpdated?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
