@@ -27,7 +27,7 @@ Students can report **lost** or **found** items, **browse listings**, **chat wit
 ## 📸 Screenshots
 
 ### 🏠 Homepage
-![Homepage](public/screenshots/3.jpg)
+![Homepage](public/screenshots/3.png)
 
 ### 📄 Reporting
 ![Item Details](public/screenshots/6.png)
