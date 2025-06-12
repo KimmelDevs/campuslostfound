@@ -24,12 +24,19 @@ Students can report **lost** or **found** items, **browse listings**, **chat wit
 - **Package Manager**: npm
 
 ---
+## 📸 Screenshots
 
-#📸 Screenshots
-Homepage	Item Details
-public/screenshots/background.jpg	https://public/screenshots/details.png
-Chat System	Admin Panel
-https://public/screenshots/chat.png	https://public/screenshots/admin.png
+### 🏠 Homepage
+![Homepage](public/screenshots/background.jpg)
+
+### 📄 Item Details
+![Item Details](public/screenshots/details.png)
+
+### 💬 Chat System
+![Chat System](public/screenshots/chat.png)
+
+### 🔐 Admin Panel
+![Admin Panel](public/screenshots/admin.png)
 
 
 #🤝 Contributing
@@ -75,3 +82,4 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+
