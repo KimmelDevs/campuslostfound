@@ -67,11 +67,14 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 ### 🔐 Admin Panel
 ![Admin Panel](public/screenshots/admin.png)
 
-
-#🤝 Contributing
+--
+### 🤝 Contributing
 Contributions are welcome!
 
 Fork the repo
+
+```bash
+
 
 Create a new branch: git checkout -b feature/your-feature
 
@@ -81,9 +84,11 @@ Push to the branch: git push origin feature/your-feature
 
 Open a Pull Request
 
-#📄 License
+```
+
+### 📄 License
 This project is licensed under the MIT License.
 
-#🙌 Acknowledgments
+### 🙌 Acknowledgments
 Developed with ❤️ by KimmelDevs
 Built for a safer and more connected student community.
