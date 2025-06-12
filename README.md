@@ -37,7 +37,8 @@ npm install
 
 # 3. Start the development server
 npm run dev
-🔐 Environment Variables
+
+# 🔐 Environment Variables
 Create a .env.local file and configure it with your Firebase credentials:
 
 NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
@@ -47,14 +48,14 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
-📸 Screenshots
+#📸 Screenshots
 Homepage	Item Details
 public/screenshots/background.jpg	https://public/screenshots/details.png
 Chat System	Admin Panel
 https://public/screenshots/chat.png	https://public/screenshots/admin.png
 
 
-🤝 Contributing
+#🤝 Contributing
 Contributions are welcome!
 
 Fork the repo
@@ -67,9 +68,9 @@ Push to the branch: git push origin feature/your-feature
 
 Open a Pull Request
 
-📄 License
+#📄 License
 This project is licensed under the MIT License.
 
-🙌 Acknowledgments
+#🙌 Acknowledgments
 Developed with ❤️ by KimmelDevs
 Built for a safer and more connected student community.
