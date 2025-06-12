@@ -25,20 +25,6 @@ Students can report **lost** or **found** items, **browse listings**, **chat wit
 
 ---
 
-## 🛠️ Installation & Running Locally
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/KimmelDevs/campuslostfound.git
-cd campuslostfound
-
-# 2. Install dependencies
-npm install
-
-# 3. Start the development server
-npm run dev
-
-
 #📸 Screenshots
 Homepage	Item Details
 public/screenshots/background.jpg	https://public/screenshots/details.png
@@ -65,6 +51,20 @@ This project is licensed under the MIT License.
 #🙌 Acknowledgments
 Developed with ❤️ by KimmelDevs
 Built for a safer and more connected student community.
+
+## 🛠️ Installation & Running Locally
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/KimmelDevs/campuslostfound.git
+cd campuslostfound
+
+# 2. Install dependencies
+npm install
+
+# 3. Start the development server
+npm run dev
+
 
 # 🔐 Environment Variables
 Create a .env.local file and configure it with your Firebase credentials:
